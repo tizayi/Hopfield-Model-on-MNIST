@@ -19,7 +19,10 @@ def getspin(img,thresh=0):
 P1 = getspin(X_train[9,:,:])
 P2 = getspin(X_train[80,:,:])
 P3 = getspin(X_train[23,:,:])
+
+# List of patterns
 P = [P1,P2]
+
 # Random initialisation 
 S = np.random.randint(2, size=(28,28))
 S[S==0] = -1
@@ -28,16 +31,14 @@ S[S==0] = -1
 fig, ax = plt.subplots(2,len(P))
 for i,pattern in enumerate(P):
     ax[0, i].imshow(pattern)
-
 ax[1,0].imshow(S)
 
 # Hopfield Sweep updating
-
 for i in range(30):
     Snew,H = hm.hopfiled_sweep(S,1,P)
     S = Snew
     ax[1,1].imshow(Snew)
     plt.draw()
     plt.pause(0.1)
+
 plt.show()
-print(H)
