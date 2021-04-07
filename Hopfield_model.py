@@ -2,16 +2,21 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random as rd
 
-def Energy(S,P1,P2,P3,Np):
+def Energy(S,P):
+    Np = len(P)
     N = S.size
-    H = -(1/2*N)*(np.sum(np.tensordot(P1,S)**2 + np.tensordot(P2,S)**2) + np.tensordot(P3,S)**2) + Np/2
+    Psum = 0
+    for pattern in P:
+        Psum += np.tensordot(pattern,S)**2
+    
+    H = -(1/2*N)*(np.sum(Psum)) + Np/2
     return H
 
 # Monte carlo algorithm 
-def hopfiled_sweep(S,T,P1,P2,P3,Np):
+def hopfiled_sweep(S,T,P):
     Ny,Nx = S.shape
     # Calculating The energy of the configuration 
-    H = Energy(S,P1,P2,P3,Np)
+    H = Energy(S,P)
     # Performing 1 sweep 
     for k in range(Nx*Ny//2):
     
@@ -23,7 +28,7 @@ def hopfiled_sweep(S,T,P1,P2,P3,Np):
         S_flip[y,x] = -S[y,x]
         
         # Calculating the new energy
-        H_new = Energy(S_flip,P1,P2,P3,Np)
+        H_new = Energy(S_flip,P)
         de = H_new - H
     
         # Deciding on whether to take the flip
