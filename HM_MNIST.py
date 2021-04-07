@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import random as rd
-import Hopfield_model as hm
+from Hopfield_model import hopfiled_sweep
 from matplotlib.widgets import Button
 from tensorflow.keras.datasets import mnist
 
@@ -15,14 +15,14 @@ def getspin(img,thresh=0):
 # Getting the MNIST dataset from tensorflow datasets
 (X_train, Y_train), (X_test, Y_test) = mnist.load_data()
 
-# Getting 2 patterns
+# Getting a number of patterns
 P1 = getspin(X_train[9,:,:])
 P2 = getspin(X_train[80,:,:])
 P3 = getspin(X_train[23,:,:])
+P4 = getspin(X_train[56,:,:])
 
 # List of patterns
 P = [P1,P2]
-
 # Random initialisation 
 S = np.random.randint(2, size=(28,28))
 S[S==0] = -1
@@ -35,10 +35,9 @@ ax[1,0].imshow(S)
 
 # Hopfield Sweep updating
 for i in range(30):
-    Snew,H = hm.hopfiled_sweep(S,1,P)
+    Snew,H = hopfiled_sweep(S,1,P)
     S = Snew
     ax[1,1].imshow(Snew)
     plt.draw()
     plt.pause(0.1)
-
 plt.show()

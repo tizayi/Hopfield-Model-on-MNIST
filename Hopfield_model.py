@@ -2,20 +2,20 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random as rd
 
+# Calculate the energy of a configuration
 def Energy(S,P):
     Np = len(P)
     N = S.size
     Psum = 0
     for pattern in P:
         Psum += np.tensordot(pattern,S)**2
-    
     H = -(1/2*N)*(np.sum(Psum)) + Np/2
     return H
 
 # Monte carlo algorithm 
 def hopfiled_sweep(S,T,P):
     Ny,Nx = S.shape
-    # Calculating The energy of the configuration 
+    # Calculating The energy of the initial configuration 
     H = Energy(S,P)
     # Performing 1 sweep 
     for k in range(Nx*Ny//2):
