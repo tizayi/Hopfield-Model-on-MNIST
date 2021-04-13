@@ -31,6 +31,7 @@ for temp in temps:
         Snew = HM.Training(Spins,Patterns,T=temp)
         overlaps[i] = HM.overlap(Snew,P1)
     mean_overlaps[i] = np.mean(overlaps)
+print(mean_overlaps)
 
 # Getting the overlap
 plt.plot(temps,mean_overlaps)
