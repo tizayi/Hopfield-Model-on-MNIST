@@ -3,20 +3,20 @@ import matplotlib.pyplot as plt
 import random as rd
 
 # Calculate the energy of a configuration
-def Energy(S,P):
-    Np = len(P)
-    N = S.size
+def Energy(Spins,Patterns):
+    Np = len(Patterns)
+    N = Spins.size
     Psum = 0
-    for pattern in P:
-        Psum += np.tensordot(pattern,S)**2
-    H = -(1/2*N)*(np.sum(Psum)) + Np/2
+    for pattern in Patterns:
+        Psum += np.tensordot(pattern,Spins)**2
+    H = -(1/2*N)*(Psum) + Np/2
     return H
 
 # Monte carlo algorithm 
-def hopfiled_sweep(S,T,P):
-    Ny,Nx = S.shape
+def hopfiled_sweep(Spins,T,Patterns):
+    Ny,Nx = Spins.shape
     # Calculating The energy of the initial configuration 
-    H = Energy(S,P)
+    H = Energy(Spins,Patterns)
     # Performing 1 sweep 
     for k in range(Nx*Ny//2):
     
@@ -24,19 +24,20 @@ def hopfiled_sweep(S,T,P):
         x = np.random.randint(Nx)
         y = np.random.randint(Ny)
         
-        S_flip = S.copy()
-        S_flip[y,x] = -S[y,x]
+        S_flip = Spins.copy()
+        S_flip[y,x] = -Spins[y,x]
         
         # Calculating the new energy
-        H_new = Energy(S_flip,P)
+        H_new = Energy(S_flip,Patterns)
         de = H_new - H
-    
         # Deciding on whether to take the flip
         rand_value = rd.random()
         if de <= 0 :
-            S = S_flip
+            Spins = S_flip
             H = H_new
+        
         elif rand_value <= np.exp(-de/T):
-            S = S_flip
+            print('Please At least once')
+            Spins = S_flip
             H = H_new
-    return [S,H]
+    return [Spins,H]
