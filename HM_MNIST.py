@@ -2,7 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random as rd
 import Hopfield_model as HM
-from matplotlib.widgets import Button
 from tensorflow.keras.datasets import mnist
 
 # Getting the MNIST dataset Patternsrom tensorflow datasets
