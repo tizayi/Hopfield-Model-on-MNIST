@@ -29,6 +29,8 @@ def hopfiled_sweep(Spins,Patterns,T):
         # Choosing a spin to flip
         x = np.random.randint(Nx)
         y = np.random.randint(Ny)
+        
+        # Flipping said spin
         S_flip = Spins.copy()
         S_flip[y,x] = -Spins[y,x]
         
@@ -45,6 +47,13 @@ def hopfiled_sweep(Spins,Patterns,T):
             H = H_new
     return [Spins,H]
 
+# Hopfield Sweep updating
+def Training(Spins,Patterns,T,sweeps=30):
+    for i in range(sweeps):
+        Snew,H = hopfiled_sweep(Spins,Patterns,T)
+        Spins = Snew
+    return Snew
+
 # Visualisation 
 def View(Patterns,Spins,Snew):
     fig, ax = plt.subplots(2,len(Patterns))
@@ -53,14 +62,6 @@ def View(Patterns,Spins,Snew):
     ax[1,0].imshow(Spins)
     ax[1,1].imshow(Snew)
 
-# Hopfield Sweep updating
-def Training(Spins,Patterns,T,sweeps=30):
-    for i in range(sweeps):
-        Snew,H = hopfiled_sweep(Spins,Patterns,T)
-        Spins = Snew
-    return Snew
-
 # Getiing the overlap
 def overlap(Spins,Pattern):
-    overlap = abs(1/(Spins.size)*np.tensordot(Spins,Pattern))
-    return overlap
+    return abs(1/(Spins.size)*np.tensordot(Spins,Pattern))
