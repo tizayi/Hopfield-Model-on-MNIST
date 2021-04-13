@@ -21,7 +21,7 @@ Patterns = [P1,P4]
 Spins = np.random.randint(2, size=(28,28))
 Spins[Spins==0] = -1
 
-
+'''
 # Generating overlap vs temp graphs 
 temps=np.arange(0.1,2,0.1)
 mean_overlaps=np.zeros(len(temps))
@@ -31,7 +31,10 @@ for j,temp in enumerate(temps):
         Snew = HM.Training(Spins,Patterns,T=temp)
         overlaps[i] = HM.overlap(Snew,P1)
     mean_overlaps[j] = np.mean(overlaps)
-
+'''
 # Getting the overlap
-plt.plot(temps,mean_overlaps)
+#plt.plot(temps,mean_overlaps)
+#plt.show()
+Snew = HM.Training(Spins,Patterns,T=0.1)
+HM.View(Patterns,Spins,Snew)
 plt.show()
