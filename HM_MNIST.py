@@ -26,8 +26,8 @@ Spins[Spins==0] = -1
 temps=np.arange(0.1,2,0.1)
 mean_overlaps=np.zeros(len(temps))
 for j,temp in enumerate(temps):
-    overlaps = np.zeros(10)
-    for i in range (10):
+    overlaps = np.zeros(20)
+    for i in range (20):
         Snew = HM.Training(Spins,Patterns,T=temp)
         overlaps[i] = HM.overlap(Snew,P1)
     mean_overlaps[j] = np.mean(overlaps)
