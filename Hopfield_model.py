@@ -65,3 +65,15 @@ def View(Patterns,Spins,Snew):
 # Getiing the overlap
 def overlap(Spins,Pattern):
     return abs(1/(Spins.size)*np.tensordot(Spins,Pattern))
+
+# Adding noise 
+def add_noise(Spins,prob):
+    S = Spins.copy()
+    num = int(S.size*prob)
+    rand = np.arange(28)
+    for i in range(num):
+        randx = np.random.choice(rand)
+        randy = np.random.choice(rand)
+        S[randx,randy] = -S[randx,randy]
+    return S
+
