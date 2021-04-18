@@ -21,3 +21,4 @@ for i in range(10):
         ax[i,j].set_xticks([]) 
         ax[i,j].set_yticks([])
 plt.show()
+ 
