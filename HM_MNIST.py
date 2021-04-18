@@ -14,15 +14,15 @@ P3 = HM.getspin(X_train[23,:,:])
 P4 = HM.getspin(X_train[56,:,:])
 
 # List of patterns
-Patterns = [P2,P3,P4]
+Patterns = [P2,P3]
 
 # Random initialisation 
 # Spins = np.random.randint(2, size=(28,28))
 #Spins[Spins==0] = -1
 
-Spins = HM.add_noise(P4,0.2)
+Spins = HM.add_noise(P3,0.2)
 
-Snew = HM.Training(Spins,Patterns,T=0.2,sweeps=100)
+Snew = HM.Training(Spins,Patterns,T=0.2,sweeps=50)
 HM.View(Patterns,Spins,Snew)
 plt.show()
 
