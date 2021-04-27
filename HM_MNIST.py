@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import random as rd
-import Finding_patterns as FP
 import Hopfield_model as HM
 from tensorflow.keras.datasets import mnist
 
