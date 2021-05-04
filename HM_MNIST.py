@@ -2,26 +2,35 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random as rd
 import Hopfield_model as HM
+import Finding_patterns as FP
 from tensorflow.keras.datasets import mnist
 
-# Getting the MNIST dataset Patternsrom tensorflow datasets
+# Getting the MNIST dataset Patterns from tensorflow datasets
 (X_train, Y_train), (X_test, Y_test) = mnist.load_data()
+# Finding the index of the best train patterns for each
+idx = FP.find_patterns(X_train,Y_train,20,rdseed=9).astype(int)
 
-# Getting a number of patterns
-P1 = HM.getspin(X_train[9,:,:])
-P2 = HM.getspin(X_train[80,:,:])
-P3 = HM.getspin(X_train[23,:,:])
-P4 = HM.getspin(X_train[56,:,:])
-P5 = HM.getspin(X_train[57,:,:])
-# List of patterns
-Patterns = [P5,P2,P4]
+# Getting test patterns
+idxmat = FP.get_test_patterns(100,Y_train).astype(int)
 
-# Random initialisation 
-# Spins = np.random.randint(2, size=(28,28))
+# List train of patterns
+train_Patterns = HM.getspin(X_train[idx,:,:])
+Patterns = train_Patterns[[3,6]] 
+
+# Random Initialisation 
+#Spins = np.random.randint(2, size=(28,28))
 #Spins[Spins==0] = -1
-Spins = HM.add_noise(P2,0.1)
 
-Snew = HM.Training(Spins,Patterns,T=0.2,sweeps=50)
+# Noisy pattern initialisation
+#Spins = HM.add_noise(Patterns[1],0.1)
+
+# Test pattern intilisation
+test_Patterns = HM.getspin(X_train[idxmat,:,:])
+Spins=test_Patterns[6,87]
+
+Snew = HM.Model(Spins,Patterns,T=0.2,sweeps=50)
+OvLp = HM.overlap(Snew,Patterns[1])
+print(OvLp)
 HM.View(Patterns,Spins,Snew)
 plt.show()
 

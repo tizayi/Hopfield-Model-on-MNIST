@@ -3,8 +3,6 @@ import matplotlib.pyplot as plt
 import Hopfield_model as HM
 from tensorflow.keras.datasets import mnist
 
-
-
 # Getting the MNIST dataset Patternsrom tensorflow datasets
 (X_train, Y_train), (X_test, Y_test) = mnist.load_data()
 
@@ -26,14 +24,12 @@ def get_loss(i,j,idxmat,X_train,N):
                 dif_num += np.tensordot(P1,P2)**2
     return dif_num - N*same_num
 
-def find_patterns(X_train,N,view=False,rd_seed=7):
-    
-    np.random.seed(7)
+def find_patterns(X_train,Y_train,N,view=False,rdseed=7):
+    np.random.seed(rdseed)
     # Creating matrix of indices 
     idxmat = np.zeros((10,N))
     for i in range(10):
         idxmat[i,:] = np.random.choice(np.where(Y_train==i)[0],N)
-
 
     # Plotting samples
     lossspace = np.zeros((10,N))
@@ -48,7 +44,7 @@ def find_patterns(X_train,N,view=False,rd_seed=7):
     best_num = np.zeros(10) 
     for y in range(len(idxmat[:,j])):
         best_idx[y] = np.argmin(lossspace[y,:])
-        best_num[y] = idxmat[y,int(best_idx[y])]
+        best_num[y] = int(idxmat[y,int(best_idx[y])])
     
     if view==True:
         # Plotting best examples
@@ -63,4 +59,14 @@ def find_patterns(X_train,N,view=False,rd_seed=7):
         plt.show()
     return best_num
 
-idx=find_patterns(X_train,20,view=True)
+# Getiing a set of patterns for testing 
+
+# Get N test patterns
+def get_test_patterns(N,Y_train,rdseed=7):
+    np.random.seed(rdseed)
+    idxmat = np.zeros((10,N))
+    for i in range(10):
+        idxmat[i,:] = np.random.choice(np.where(Y_train==i)[0],N)
+    return idxmat
+
+

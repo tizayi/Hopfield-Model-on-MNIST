@@ -48,7 +48,7 @@ def hopfiled_sweep(Spins,Patterns,T):
     return [Spins,H]
 
 # Hopfield Sweep updating
-def Training(Spins,Patterns,T,sweeps=30):
+def Model(Spins,Patterns,T,sweeps=30):
     for i in range(sweeps):
         Snew,H = hopfiled_sweep(Spins,Patterns,T)
         Spins = Snew
