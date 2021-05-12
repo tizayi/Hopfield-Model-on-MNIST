@@ -50,16 +50,13 @@ def hopfiled_sweep(Spins,Patterns,T,W):
     # Calculating The energy of the initial configuration 
     H = Energy(Spins,Patterns,W)
     # Performing 1 sweep 
-    
     for k in range(Nx*Ny//2):
         # Choosing a spin to flip
         x = np.random.randint(Nx)
         y = np.random.randint(Ny)
-        
         # Flipping said spin
         S_flip = Spins.copy()
         S_flip[y,x] = -Spins[y,x]
-        
         # Calculating the new energy
         H_new = Energy(S_flip,Patterns,W)
         de = H_new - H
