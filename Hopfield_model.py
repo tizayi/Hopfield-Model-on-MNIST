@@ -39,20 +39,20 @@ def Weight(Patterns):
             W += (1/N)*Q[i,j]*np.tensordot(Patterns[i].flatten(),Patterns[j].flatten() , axes=0)
     return W 
 
-def Energy(Spins,Patterns):
+def Energy(Spins,Patterns,W):
     N = Patterns[0].size
-    Spins = Spins.flatten()
-    Hnew = 0
-    W=Weight(Patterns)
     H = -0.5*(W*np.tensordot(Spins.flatten(), Spins.flatten(),axes=0)).sum() + N*np.diag(W).sum()
     return H
 
 # Monte carlo algorithm 
 def hopfiled_sweep(Spins,Patterns,T):
     Ny,Nx = Spins.shape
+    W = Weight(Patterns)
+    
     # Calculating The energy of the initial configuration 
-    H = Energy(Spins,Patterns)
+    H = Energy(Spins,Patterns,W)
     # Performing 1 sweep 
+    
     for k in range(Nx*Ny//2):
         # Choosing a spin to flip
         x = np.random.randint(Nx)
@@ -63,7 +63,7 @@ def hopfiled_sweep(Spins,Patterns,T):
         S_flip[y,x] = -Spins[y,x]
         
         # Calculating the new energy
-        H_new = Energy(S_flip,Patterns)
+        H_new = Energy(S_flip,Patterns,W)
         de = H_new - H
         # Deciding on whether to take the flip
         rand_value = rd.random()
