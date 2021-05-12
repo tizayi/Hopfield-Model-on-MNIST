@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import random as rd
+from itertools import combinations
+from functools import reduce
 
 # Converting to greyscale image into spins
 def getspin(img,thresh=0):
@@ -19,6 +21,39 @@ def Energy(Spins,Patterns):
     H = -(1/(2*N))*(Psum) + Np/2
     return H
 
+# Psudo inverse method
+def Qinverse(Patterns):
+    N = Patterns[0].size
+    Q = np.zeros((len(Patterns),len(Patterns)))
+    for i in range(len(Patterns)):
+        for j in range(len(Patterns)):
+            Q[i,j]= np.tensordot(Patterns[i],Patterns[j])/N
+    return np.linalg.inv(Q)
+    
+def Weight(Patterns):
+    N = Patterns[0].size
+    Q = Qinverse(Patterns) 
+    W = np.zeros((Patterns[0].size,Patterns[0].size))
+    for i in range(len(Patterns)):
+        for j in range(len(Patterns)):
+            if i!=j:
+                t = (1/N)*Q[i,j]*np.matmul( Patterns[i].flatten(), Patterns[j].flatten())/N
+                print(t.shape)
+                W +=t 
+    return W 
+'''
+def Energy(Spins,Patterns):
+    Spins = Spins.flatten()
+    #Spins = reduce(lambda z, y :z + y, Spins)
+    Hnew = 0
+    W=Weight(Patterns)
+    for i in range(Spins.size):
+        for j in range(Spins.size):
+            if i!=j:
+                H=-0.5*Spins[i]*W[i,j]*Spins[j]
+                Hnew=Hnew+H
+    return Hnew
+'''
 # Monte carlo algorithm 
 def hopfiled_sweep(Spins,Patterns,T):
     Ny,Nx = Spins.shape
