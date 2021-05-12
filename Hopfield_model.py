@@ -12,7 +12,7 @@ def getspin(img,thresh=0):
     return img
 
 # Calculate the energy of a configuration
-def Energy(Spins,Patterns):
+def HEnergy(Spins,Patterns):
     Np = len(Patterns)
     N = Spins.size
     Psum = 0
@@ -27,7 +27,7 @@ def Qinverse(Patterns):
     Q = np.zeros((len(Patterns),len(Patterns)))
     for i in range(len(Patterns)):
         for j in range(len(Patterns)):
-            Q[i,j]= np.tensordot(Patterns[i],Patterns[j])/N
+            Q[i,j] = np.tensordot(Patterns[i],Patterns[j])/N
     return np.linalg.inv(Q)
     
 def Weight(Patterns):
@@ -36,24 +36,17 @@ def Weight(Patterns):
     W = np.zeros((Patterns[0].size,Patterns[0].size))
     for i in range(len(Patterns)):
         for j in range(len(Patterns)):
-            if i!=j:
-                t = (1/N)*Q[i,j]*np.matmul( Patterns[i].flatten(), Patterns[j].flatten())/N
-                print(t.shape)
-                W +=t 
+            W += (1/N)*Q[i,j]*np.tensordot(Patterns[i].flatten(),Patterns[j].flatten() , axes=0)
     return W 
-'''
+
 def Energy(Spins,Patterns):
+    N = Patterns[0].size
     Spins = Spins.flatten()
-    #Spins = reduce(lambda z, y :z + y, Spins)
     Hnew = 0
     W=Weight(Patterns)
-    for i in range(Spins.size):
-        for j in range(Spins.size):
-            if i!=j:
-                H=-0.5*Spins[i]*W[i,j]*Spins[j]
-                Hnew=Hnew+H
-    return Hnew
-'''
+    H = -0.5*(W*np.tensordot(Spins.flatten(), Spins.flatten(),axes=0)).sum() + N*np.diag(W).sum()
+    return H
+
 # Monte carlo algorithm 
 def hopfiled_sweep(Spins,Patterns,T):
     Ny,Nx = Spins.shape

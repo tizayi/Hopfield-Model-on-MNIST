@@ -4,8 +4,7 @@ import random as rd
 import Hopfield_model as HM
 import Finding_patterns as FP
 from tensorflow.keras.datasets import mnist
-from itertools import combinations
-from functools import reduce
+
 
 # Getting the MNIST dataset Patterns from tensorflow datasets
 (X_train, Y_train), (X_test, Y_test) = mnist.load_data()
@@ -17,25 +16,20 @@ idxmat = FP.get_test_patterns(100,Y_train).astype(int)
 
 # List train of patterns
 train_Patterns = HM.getspin(X_train[idx,:,:])
-Patterns = train_Patterns[[3,6]]
+Patterns = train_Patterns[[3,6,7]]
 
 # Random Initialisation 
 #Spins = np.random.randint(2, size=(28,28))
 #Spins[Spins==0] = -1
-
-Q = HM.Qinverse(Patterns)
-W = HM.Weight(Patterns)
-print(Q.shape)
-print(W.shape)
 
 # Noisy pattern initialisation
 #Spins = HM.add_noise(Patterns[1],0.1)
 
 # Test pattern intilisation
 test_Patterns = HM.getspin(X_train[idxmat,:,:])
-Spins=test_Patterns[6,87]
+Spins=test_Patterns[3,56]
 
-Snew = HM.Model(Spins,Patterns,T=0.2,sweeps=100)
+Snew = HM.Model(Spins,Patterns,T=0.2,sweeps=5)
 OvLp = HM.overlap(Snew,Patterns[1])
 
 print(OvLp)
