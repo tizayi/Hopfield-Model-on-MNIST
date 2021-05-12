@@ -36,6 +36,7 @@ print(OvLp)
 HM.View(Patterns,Spins,Snew)
 plt.show()
 
+
 '''
 # Generating overlap vs temp graphs 
 temps=np.arange(0.1,2,0.1)
