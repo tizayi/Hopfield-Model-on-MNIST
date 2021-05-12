@@ -29,11 +29,12 @@ def Qinverse(Patterns):
         for j in range(len(Patterns)):
             Q[i,j] = np.tensordot(Patterns[i],Patterns[j])/N
     return np.linalg.inv(Q)
-    
+
+# Finding weight matrix
 def Weight(Patterns):
     N = Patterns[0].size
     Q = Qinverse(Patterns) 
-    W = np.zeros((Patterns[0].size,Patterns[0].size))
+    W = np.zeros((N,N))
     for i in range(len(Patterns)):
         for j in range(len(Patterns)):
             W += (1/N)*Q[i,j]*np.tensordot(Patterns[i].flatten(),Patterns[j].flatten() , axes=0)
@@ -72,6 +73,7 @@ def hopfiled_sweep(Spins,Patterns,T,W):
 
 # Hopfield Sweep updating
 def Model(Spins,Patterns,T,sweeps=30):
+    # Find weight matrix
     W = Weight(Patterns)
     for i in range(sweeps):
         Snew,H = hopfiled_sweep(Spins,Patterns,T,W)

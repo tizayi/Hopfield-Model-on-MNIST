@@ -16,7 +16,7 @@ idxmat = FP.get_test_patterns(100,Y_train).astype(int)
 
 # List train of patterns
 train_Patterns = HM.getspin(X_train[idx,:,:])
-Patterns = train_Patterns[[3,6,7,4,5]]
+Patterns = train_Patterns[[3,6,7,4]]
 
 # Random Initialisation 
 #Spins = np.random.randint(2, size=(28,28))
@@ -27,7 +27,7 @@ Patterns = train_Patterns[[3,6,7,4,5]]
 
 # Test pattern intilisation
 test_Patterns = HM.getspin(X_train[idxmat,:,:])
-Spins=test_Patterns[6,58]
+Spins=test_Patterns[7,48]
 
 Snew = HM.Model(Spins,Patterns,T=0.2,sweeps=10)
 OvLp = HM.overlap(Snew,Patterns[1])
