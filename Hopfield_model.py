@@ -45,10 +45,8 @@ def Energy(Spins,Patterns,W):
     return H
 
 # Monte carlo algorithm 
-def hopfiled_sweep(Spins,Patterns,T):
+def hopfiled_sweep(Spins,Patterns,T,W):
     Ny,Nx = Spins.shape
-    W = Weight(Patterns)
-    
     # Calculating The energy of the initial configuration 
     H = Energy(Spins,Patterns,W)
     # Performing 1 sweep 
@@ -77,8 +75,9 @@ def hopfiled_sweep(Spins,Patterns,T):
 
 # Hopfield Sweep updating
 def Model(Spins,Patterns,T,sweeps=30):
+    W = Weight(Patterns)
     for i in range(sweeps):
-        Snew,H = hopfiled_sweep(Spins,Patterns,T)
+        Snew,H = hopfiled_sweep(Spins,Patterns,T,W)
         Spins = Snew
     return Snew
 

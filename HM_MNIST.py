@@ -29,7 +29,7 @@ Patterns = train_Patterns[[3,6,7]]
 test_Patterns = HM.getspin(X_train[idxmat,:,:])
 Spins=test_Patterns[3,56]
 
-Snew = HM.Model(Spins,Patterns,T=0.2,sweeps=5)
+Snew = HM.Model(Spins,Patterns,T=0.2,sweeps=10)
 OvLp = HM.overlap(Snew,Patterns[1])
 
 print(OvLp)
