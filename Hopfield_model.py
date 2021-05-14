@@ -72,9 +72,7 @@ def hopfiled_sweep(Spins,Patterns,T,W):
     return [Spins,H]
 
 # Hopfield Sweep updating
-def Model(Spins,Patterns,T,sweeps=30):
-    # Find weight matrix
-    W = Weight(Patterns)
+def Model(Spins,Patterns,T,W,sweeps=30):
     for i in range(sweeps):
         Snew,H = hopfiled_sweep(Spins,Patterns,T,W)
         Spins = Snew

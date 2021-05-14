@@ -4,6 +4,8 @@ import random as rd
 import Hopfield_model as HM
 import Finding_patterns as FP
 from tensorflow.keras.datasets import mnist
+import pandas as pd
+from progress.bar import Bar
 
 
 # Getting the MNIST dataset Patterns from tensorflow datasets
@@ -11,13 +13,11 @@ from tensorflow.keras.datasets import mnist
 # Finding the index of the best train patterns for each
 idx = FP.find_patterns(X_train,Y_train,20,rdseed=9).astype(int)
 
-# Getting test patterns
-idxmat = FP.get_test_patterns(100,Y_train).astype(int)
-
 # List train of patterns
 train_Patterns = HM.getspin(X_train[idx,:,:])
 Patterns = train_Patterns[[3,6,7,4]]
-
+Patident = [3,6,7,4]
+W = HM.Weight(Patterns)
 # Random Initialisation 
 #Spins = np.random.randint(2, size=(28,28))
 #Spins[Spins==0] = -1
@@ -25,16 +25,33 @@ Patterns = train_Patterns[[3,6,7,4]]
 # Noisy pattern initialisation
 #Spins = HM.add_noise(Patterns[1],0.1)
 
+
+# Getting test patterns
+idxmat = FP.get_test_patterns(100,Y_train).astype(int)
+
 # Test pattern intilisation
 test_Patterns = HM.getspin(X_train[idxmat,:,:])
-Spins=test_Patterns[7,48]
+bar = Bar('Processing', max=4000)
+counter = np.zeros((10,4))
 
-Snew = HM.Model(Spins,Patterns,T=0.2,sweeps=10)
-OvLp = HM.overlap(Snew,Patterns[1])
+for test in range(10):
+    for i,trainp  in enumerate(Patterns):
+        for j in range(100):
+            Spins = test_Patterns[Patident[i],j]
+            Snew = HM.Model(Spins,Patterns,T=0.2,W=W,sweeps=10)
+            OvLp = HM.overlap(Snew,trainp)
+            if OvLp >= 0.99:
+                counter[test,i]+=1
+            bar.next()
 
-print(OvLp)
-HM.View(Patterns,Spins,Snew)
-plt.show()
+bar.finish()
+
+df=pd.DataFrame(counter,columns=['3', '6', '7','4'])
+df.to_csv("C:/Users/tizay/OneDrive/Documents/GitHub/Hopfield-Model-on-MNIST/HM_results2.csv")
+
+
+#HM.View(Patterns,Spins,Snew)
+#plt.show()
 
 
 '''
