@@ -9,7 +9,7 @@ def getspin(img,thresh=0):
     img[img <= thresh] = -1
     return img
 
-# Calculate the energy of a configuration
+# Calculate the standard Hopfiled Hamiltonian of a configuration
 def HEnergy(Spins,Patterns):
     Np = len(Patterns)
     N = Spins.size
@@ -38,6 +38,7 @@ def Weight(Patterns):
             W += (1/N)*Q[i,j]*np.tensordot(Patterns[i].flatten(),Patterns[j].flatten() , axes=0)
     return W 
 
+# Psudo inverse Hamiltonian
 def Energy(Spins,Patterns,W):
     N = Patterns[0].size
     H = -0.5*(W*np.tensordot(Spins.flatten(), Spins.flatten(),axes=0)).sum() + N*np.diag(W).sum()
