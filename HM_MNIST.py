@@ -5,18 +5,18 @@ import Hopfield_model as HM
 import Finding_patterns as FP
 from tensorflow.keras.datasets import mnist
 import pandas as pd
-from progress.bar import Bar
+from progress.bar import Bar 
 
 
 # Getting the MNIST dataset Patterns from tensorflow datasets
 (X_train, Y_train), (X_test, Y_test) = mnist.load_data()
 # Finding the index of the best train patterns for each
-idx = FP.find_patterns(X_train,Y_train,20,rdseed=9).astype(int)
+idx = FP.find_patterns(X_train,Y_train,20,rdseed=9  ).astype(int)
 
 # List train of patterns
 train_Patterns = HM.getspin(X_train[idx,:,:])
-Patterns = train_Patterns[[3,6,7,4]]
-Patident = [3,6,7,4]
+Patterns = train_Patterns[[3,6,1,0,4]]
+Patident = [3,6,1,0,4]
 W = HM.Weight(Patterns)
 # Random Initialisation 
 #Spins = np.random.randint(2, size=(28,28))
@@ -27,14 +27,13 @@ W = HM.Weight(Patterns)
 
 
 # Getting test patterns
-idxmat = FP.get_test_patterns(100,Y_train).astype(int)
-
-# Test pattern intilisation
-test_Patterns = HM.getspin(X_train[idxmat,:,:])
-bar = Bar('Processing', max=4000)
-counter = np.zeros((10,4))
+'''
+bar = Bar('Processing', max=100*10*len(Patterns))
+counter = np.zeros((10,len(Patterns)))
 
 for test in range(10):
+    idxmat = FP.get_test_patterns(100,Y_train).astype(int)
+    test_Patterns = HM.getspin(X_train[idxmat,:,:])
     for i,trainp  in enumerate(Patterns):
         for j in range(100):
             Spins = test_Patterns[Patident[i],j]
@@ -46,12 +45,20 @@ for test in range(10):
 
 bar.finish()
 
-df=pd.DataFrame(counter,columns=['3', '6', '7','4'])
+df=pd.DataFrame(counter,columns=['3','6','1','0','4'])
 df.to_csv("C:/Users/tizay/OneDrive/Documents/GitHub/Hopfield-Model-on-MNIST/HM_results2.csv")
 
-
+'''
 #HM.View(Patterns,Spins,Snew)
-#plt.show()
+
+fig, ax = plt.subplots(2,3)
+ax[0,0].imshow(Patterns[0])
+ax[0,1].imshow(Patterns[1])
+ax[0,2].imshow(Patterns[2])
+ax[1,0].imshow(Patterns[3])
+ax[1,1].imshow(Patterns[4])
+ax[1,2].remove()
+plt.show()
 
 
 '''

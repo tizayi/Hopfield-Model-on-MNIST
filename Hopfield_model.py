@@ -1,8 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import random as rd
-from itertools import combinations
-from functools import reduce
 
 # Converting to greyscale image into spins
 def getspin(img,thresh=0):
@@ -46,6 +44,7 @@ def Energy(Spins,Patterns,W):
     return H
 
 # Monte carlo algorithm 
+
 def hopfiled_sweep(Spins,Patterns,T,W):
     Ny,Nx = Spins.shape
     # Calculating The energy of the initial configuration 
