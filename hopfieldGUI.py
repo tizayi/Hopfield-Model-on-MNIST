@@ -9,7 +9,7 @@ import numpy as np
 
 class MyWindow:
     def __init__(self, win):
-        self.model = HopfieldModel([3,6])
+        self.model = pseudoInverseModel([3,6,7,5])
         self.fig = Figure(figsize=(4.5, 3), dpi=100)
         self.axes = self.fig.add_subplot(1, 1, 1)
         self.axes.imshow(self.model.getState())
