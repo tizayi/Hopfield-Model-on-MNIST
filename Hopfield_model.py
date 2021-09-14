@@ -1,103 +1,154 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import random as rd
+from tensorflow.keras.datasets import mnist
 
-# Converting to greyscale image into spins
-def getspin(img,thresh=0):
-    img = img/255
-    img[img > thresh] = 1
-    img[img <= thresh] = -1
-    return img
+# More object oriented aproach
+class HopfieldModel():
+    def __init__(self,storedIdx,thresh=0,temp=0.2):
+        # Hyperparameters
+        self.temp = temp
+        self.thresh = thresh
+        
+        # Index of all 10 patterns
+        (X_train, Y_train), (X_test, Y_test) = mnist.load_data()
+        
+        # Found using Finding patterns.py
+        self.idx = [39155, 7411, 38406, 21607, 28089, 38060, 25559, 55147, 52050, 49358]
+        self.allPatterns = self.getspin(X_train[self.idx,:,:])
+        self.storedIdx =  storedIdx
+        self.storedPatterns = self.allPatterns[storedIdx]
+        
+        # Initilisation
+        self.spins = np.random.randint(2, size=(28,28))
+        self.spins[self.spins==0] = -1
 
-# Calculate the standard Hopfiled Hamiltonian of a configuration
-def HEnergy(Spins,Patterns):
-    Np = len(Patterns)
-    N = Spins.size
-    Psum = 0
-    for pattern in Patterns:
-        Psum += np.tensordot(pattern,Spins)**2
-    H = -(1/(2*N))*(Psum) + Np/2
-    return H
+    # convert to spins
+    def getspin(self,img):
+        img = img/255
+        img[img > self.thresh] = 1
+        img[img <= self.thresh] = -1
+        return img
 
-# Psudo inverse method
-def Qinverse(Patterns):
-    N = Patterns[0].size
-    Q = np.zeros((len(Patterns),len(Patterns)))
-    for i in range(len(Patterns)):
-        for j in range(len(Patterns)):
-            Q[i,j] = np.tensordot(Patterns[i],Patterns[j])/N
-    return np.linalg.inv(Q)
+    # Get images for Visualisations
+    def getPatterns(self):
+        return self.storedPatterns
+    
+    def getState(self):
+        return self.spins
+    
+    # Changing the Spins
+    def addNoise(self,prob):
+        num = int(self.spins.size*prob)
+        rand = np.arange(28)
+        for i in range(num):
+            randx = np.random.choice(rand)
+            randy = np.random.choice(rand)
+            self.spins[randx,randy] = -self.spins[randx,randy]
+    
+    def randomise(self):
+        self.spins=np.random.randint(2, size=(28,28))
+        self.spins[self.spins==0] = -1
+    
+    def setSpins(self,num):
+        self.spins = self.allPatterns[num].copy()
+    
+    # Setting Hyperparameters
+    def setTemp(self,temp):
+        self.temp = temp
 
-# Finding weight matrix
-def Weight(Patterns):
-    N = Patterns[0].size
-    Q = Qinverse(Patterns) 
-    W = np.zeros((N,N))
-    for i in range(len(Patterns)):
-        for j in range(len(Patterns)):
-            W += (1/N)*Q[i,j]*np.tensordot(Patterns[i].flatten(),Patterns[j].flatten() , axes=0)
-    return W 
+    def setTresh(self,thresh):
+        self.thresh = thresh
+    
+    def changePatterns(self,Patterns):
+        self.storedIdx = Patterns
+        self.storedPatterns = self.allPatterns[self.storedIdx]
 
-# Psudo inverse Hamiltonian
-def Energy(Spins,Patterns,W):
-    N = Patterns[0].size
-    H = -0.5*(W*np.tensordot(Spins.flatten(), Spins.flatten(),axes=0)).sum() + N*np.diag(W).sum()
-    return H
+    # Calculate the standard Hopfiled Hamiltonian of a configuration
+    def getEnergy(self,spins):
+        Np = len(self.storedPatterns)
+        N = spins.size
+        Psum = 0
+        for pattern in self.storedPatterns:
+            Psum += np.tensordot(pattern,spins)**2
+        H = -(1/(2*N))*(Psum) + Np/2
+        return H
 
-# Monte carlo algorithm 
+    def hopfieldSweep(self,sweeps):
+        for i in range(sweeps):
+            spins = self.spins.copy()
+            Ny,Nx = spins.shape
+            # Calculating The energy of the initial configuration 
+            H = self.getEnergy(spins)
+            # Performing 1 sweep 
+            for k in range(Nx*Ny//2):
+                # Choosing a spin to flip
+                x = np.random.randint(Nx)
+                y = np.random.randint(Ny)
+                # Flipping said spin
+                S_flip = spins.copy()
+                S_flip[y,x] = -spins[y,x]
+                # Calculating the new energy
+                H_new = self.getEnergy(S_flip)
+                de = H_new - H
+                # Deciding on whether to take the flip
+                rand_value = rd.random()
+                if de <= 0 :
+                    spins = S_flip
+                    H = H_new
+                elif rand_value <= np.exp(-de/self.temp):
+                    spins = S_flip
+                    H = H_new
+            self.spins = spins
+    
+    # Getting the overlap
+    def overlap(self,number):
+        pattern = self.allPatterns[number]
+        return abs(1/(self.spins.size)*np.tensordot(self.spins,pattern))
 
-def hopfiled_sweep(Spins,Patterns,T,W):
-    Ny,Nx = Spins.shape
-    # Calculating The energy of the initial configuration 
-    H = Energy(Spins,Patterns,W)
-    # Performing 1 sweep 
-    for k in range(Nx*Ny//2):
-        # Choosing a spin to flip
-        x = np.random.randint(Nx)
-        y = np.random.randint(Ny)
-        # Flipping said spin
-        S_flip = Spins.copy()
-        S_flip[y,x] = -Spins[y,x]
-        # Calculating the new energy
-        H_new = Energy(S_flip,Patterns,W)
-        de = H_new - H
-        # Deciding on whether to take the flip
-        rand_value = rd.random()
-        if de <= 0 :
-            Spins = S_flip
-            H = H_new
-        elif rand_value <= np.exp(-de/T):
-            Spins = S_flip
-            H = H_new
-    return [Spins,H]
+# Pseudo inverse method
+class pseudoInverseModel(HopfieldModel):
+    def __init__(self,storedIdx,thresh=0,temp=0.2):
+        super().__init__(storedIdx,thresh=0,temp=0.2)
+        self.weights = self.getWeights()
 
-# Hopfield Sweep updating
-def Model(Spins,Patterns,T,W,sweeps=30):
-    for i in range(sweeps):
-        Snew,H = hopfiled_sweep(Spins,Patterns,T,W)
-        Spins = Snew
-    return Snew
+    def getWeights(self):
+        patterns = self.storedPatterns
+        # Find Pseudo Inverse
+        N = patterns[0].size
+        Q = np.zeros((len(patterns),len(patterns)))
+        for i in range(len(patterns)):
+            for j in range(len(patterns)):
+                Q[i,j] = np.tensordot(patterns[i],patterns[j])/N
+        Q = np.linalg.inv(Q)
+        
+        # Find weights
+        W = np.zeros((N,N))
+        for i in range(len(patterns)):
+            for j in range(len(patterns)):
+                W += (1/N)*Q[i,j]*np.tensordot(patterns[i].flatten(),patterns[j].flatten() , axes=0)
+        return W 
 
-# Visualisation 
-def View(Patterns,Spins,Snew):
-    fig, ax = plt.subplots(2,len(Patterns))
-    for i,pattern in enumerate(Patterns):
-        ax[0, i].imshow(pattern)
-    ax[1,0].imshow(Spins)
-    ax[1,1].imshow(Snew)
+    # Psudo inverse Hamiltonian
+    def getEnergy(self,spins):
+        patterns = self.storedPatterns
+        W = self.weights
+        N = patterns[0].size
+        H = -0.5*(W*np.tensordot(spins.flatten(), spins.flatten(),\
+            axes=0)).sum() + N*np.diag(W).sum()
+        return H
+    
+    # Adjust Weights for new pattern too
+    def changePatterns(self,Patterns):
+        self.storedIdx = Patterns
+        self.storedPatterns = self.allPatterns[self.storedIdx]
+        self.weights = self.getWeights()
 
-# Getiing the overlap
-def overlap(Spins,Pattern):
-    return abs(1/(Spins.size)*np.tensordot(Spins,Pattern))
+if __name__=="__main__":
+    model = HM.pseudoInverseModel([3,6,5,4])
+    model.plotPatterns()
+    model.plotState()
+    model.hopfieldSweep(10)
+    model.plotState()
 
-# Adding noise 
-def add_noise(Spins,prob):
-    S = Spins.copy()
-    num = int(S.size*prob)
-    rand = np.arange(28)
-    for i in range(num):
-        randx = np.random.choice(rand)
-        randy = np.random.choice(rand)
-        S[randx,randy] = -S[randx,randy]
-    return S
-
+    print(model.overlap(6))

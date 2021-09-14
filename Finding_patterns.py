@@ -69,4 +69,8 @@ def get_test_patterns(N,Y_train,rdseed=7):
         idxmat[i,:] = np.random.choice(np.where(Y_train==i)[0],N)
     return idxmat
 
-
+if __name__=="__main__":
+    # Getting the MNIST dataset Patterns from tensorflow datasets
+    (X_train, Y_train), (X_test, Y_test) = mnist.load_data()
+    # Finding the index of the best train patterns for each
+    idx = FP.find_patterns(X_train,Y_train,20,rdseed=9).astype(int)
