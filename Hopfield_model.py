@@ -5,30 +5,22 @@ from tensorflow.keras.datasets import mnist
 
 # More object oriented aproach
 class HopfieldModel():
-    def __init__(self,storedIdx,thresh=0,temp=0.2):
+    def __init__(self,storedIdx,temp=0.2):
         # Hyperparameters
         self.temp = temp
-        self.thresh = thresh
         
         # Index of all 10 patterns
         (X_train, Y_train), (X_test, Y_test) = mnist.load_data()
         
         # Found using Finding patterns.py
         self.idx = [39155, 7411, 38406, 21607, 28089, 38060, 25559, 55147, 52050, 49358]
-        self.allPatterns = self.getspin(X_train[self.idx,:,:])
+        self.allPatterns = getspin(X_train[self.idx,:,:])
         self.storedIdx =  storedIdx
         self.storedPatterns = self.allPatterns[storedIdx]
         
         # Initilisation
         self.spins = np.random.randint(2, size=(28,28))
         self.spins[self.spins==0] = -1
-
-    # convert to spins
-    def getspin(self,img):
-        img = img/255
-        img[img > self.thresh] = 1
-        img[img <= self.thresh] = -1
-        return img
 
     # Get images for Visualisations
     def getPatterns(self):
@@ -47,7 +39,7 @@ class HopfieldModel():
             self.spins[randx,randy] = -self.spins[randx,randy]
     
     def randomise(self):
-        self.spins=np.random.randint(2, size=(28,28))
+        self.spins = np.random.randint(2, size=(28,28))
         self.spins[self.spins==0] = -1
     
     def setSpins(self,num):
@@ -56,9 +48,6 @@ class HopfieldModel():
     # Setting Hyperparameters
     def setTemp(self,temp):
         self.temp = temp
-
-    def setTresh(self,thresh):
-        self.thresh = thresh
     
     def changePatterns(self,Patterns):
         self.storedIdx = Patterns
@@ -108,8 +97,8 @@ class HopfieldModel():
 
 # Pseudo inverse method
 class pseudoInverseModel(HopfieldModel):
-    def __init__(self,storedIdx,thresh=0,temp=0.2):
-        super().__init__(storedIdx,thresh=0,temp=0.2)
+    def __init__(self,storedIdx,temp=0.2):
+        super().__init__(storedIdx,temp=0.2)
         self.weights = self.getWeights()
 
     def getWeights(self):
@@ -144,11 +133,18 @@ class pseudoInverseModel(HopfieldModel):
         self.storedPatterns = self.allPatterns[self.storedIdx]
         self.weights = self.getWeights()
 
+    # convert to spins
+def getspin(img,thresh=0):
+    img = img/255
+    img[img > thresh] = 1
+    img[img <= thresh] = -1
+    return img
+
+
 if __name__=="__main__":
     model = HM.pseudoInverseModel([3,6,5,4])
     model.plotPatterns()
     model.plotState()
     model.hopfieldSweep(10)
     model.plotState()
-
     print(model.overlap(6))
