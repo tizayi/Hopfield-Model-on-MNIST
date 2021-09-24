@@ -43,7 +43,7 @@ class HopfieldModel():
         self.spins[self.spins==0] = -1
     
     def setSpins(self,num):
-        self.spins = self.allPatterns[num].copy()
+        self.spins = self.allPatterns[num,:,:].copy()
     
     # Setting Hyperparameters
     def setTemp(self,temp):
@@ -51,16 +51,14 @@ class HopfieldModel():
     
     def changePatterns(self,Patterns):
         self.storedIdx = Patterns
-        self.storedPatterns = self.allPatterns[self.storedIdx]
+        self.storedPatterns = self.allPatterns[self.storedIdx,:,:]
 
     # Calculate the standard Hopfiled Hamiltonian of a configuration
     def getEnergy(self,spins):
-        Np = len(self.storedPatterns)
+        Np = len(self.storedPatterns[:,0,0])
         N = spins.size
-        Psum = 0
-        for pattern in self.storedPatterns:
-            Psum += np.tensordot(pattern,spins)**2
-        H = -(1/(2*N))*(Psum) + Np/2
+        psum = np.sum(np.tensordot(self.storedPatterns,spins,axes=2)**2)
+        H = -(1/(2*N))*(psum) + Np/2
         return H
 
     def hopfieldSweep(self,sweeps):
@@ -134,6 +132,7 @@ class pseudoInverseModel(HopfieldModel):
         self.weights = self.getWeights()
 
     # convert to spins
+
 def getspin(img,thresh=0):
     img = img/255
     img[img > thresh] = 1
@@ -142,9 +141,11 @@ def getspin(img,thresh=0):
 
 
 if __name__=="__main__":
+    '''
     model = HM.pseudoInverseModel([3,6,5,4])
     model.plotPatterns()
     model.plotState()
     model.hopfieldSweep(10)
     model.plotState()
     print(model.overlap(6))
+    '''

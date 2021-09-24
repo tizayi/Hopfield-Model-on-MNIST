@@ -50,10 +50,6 @@ class MyWindow:
         self.plots.draw()
 
 
-
-
-
-
 window = Tk()
 mywin = MyWindow(window)
 window.title('Hopfiled Model')
